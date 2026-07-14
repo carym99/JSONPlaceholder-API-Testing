@@ -1,0 +1,46 @@
+name: JSONPlaceholder API Tests
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    name: Run Postman API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run API Tests
+        run: |
+          newman run "JSONPlaceholder API Testing.postman_collection.json" \
+          -e "JSONPlaceholder Environment.postman_environment.json" \
+          --env-var "baseUrl=https://jsonplaceholder.typicode.com" \
+          --env-var "postId=1" \
+          --env-var "userId=1" \
+          --reporters "cli,htmlextra" \
+          --reporter-htmlextra-export "JSONPlaceholder_API_Test_Report.html"
+
+      - name: Upload Newman HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-api-test-report
+          path: JSONPlaceholder_API_Test_Report.html

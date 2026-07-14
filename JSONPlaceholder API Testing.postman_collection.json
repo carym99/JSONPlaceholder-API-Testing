@@ -1,0 +1,944 @@
+{
+  "info": {
+    "_postman_id": "870c05b1-3f5c-4c84-8c9d-b7e3f9465ad2",
+    "name": "JSONPlaceholder API Testing",
+    "description": "API test suite for validating JSONPlaceholder endpoints.\n\nScope:\n\n- Functional API testing\n    \n- Positive testing\n    \n- Negative testing\n    \n- Status code validation\n    \n- Response validation\n    \n- Header validation\n    \n- Data type validation\n    \n- Response time validation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44696360",
+    "_collection_link": "https://go.postman.co/collection/44696360-870c05b1-3f5c-4c84-8c9d-b7e3f9465ad2?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "List all Resources",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an array\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains posts\", function () {\r",
+                  "    pm.expect(response.length).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains 100 posts\", function () {\r",
+                  "    pm.expect(response.length).to.eql(100);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Each post contains required fields\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post).to.have.all.keys(\r",
+                  "            \"userId\",\r",
+                  "            \"id\",\r",
+                  "            \"title\",\r",
+                  "            \"body\"\r",
+                  "        );\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post field data types are correct\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post.userId).to.be.a(\"number\");\r",
+                  "        pm.expect(post.id).to.be.a(\"number\");\r",
+                  "        pm.expect(post.title).to.be.a(\"string\");\r",
+                  "        pm.expect(post.body).to.be.a(\"string\");\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post IDs are positive numbers\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post.id).to.be.above(0);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post titles are not empty\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post.title.trim()).to.not.be.empty;\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post bodies are not empty\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post.body.trim()).to.not.be.empty;\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains 100 posts\", function () {\r",
+                  "    pm.expect(response.length).to.eql(100);\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Retrieve Resource by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedPostId = Number(pm.environment.get(\"postId\"));\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "    pm.expect(response).to.not.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post contains all required fields\", function () {\r",
+                  "    pm.expect(response).to.have.all.keys(\r",
+                  "        \"userId\",\r",
+                  "        \"id\",\r",
+                  "        \"title\",\r",
+                  "        \"body\"\r",
+                  "    );\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Returned post ID matches requested post ID\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedPostId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post field data types are correct\", function () {\r",
+                  "    pm.expect(response.userId).to.be.a(\"number\");\r",
+                  "    pm.expect(response.id).to.be.a(\"number\");\r",
+                  "    pm.expect(response.title).to.be.a(\"string\");\r",
+                  "    pm.expect(response.body).to.be.a(\"string\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post title is not empty\", function () {\r",
+                  "    pm.expect(response.title.trim()).to.not.be.empty;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post body is not empty\", function () {\r",
+                  "    pm.expect(response.body.trim()).to.not.be.empty;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create a Resource",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const requestBody = JSON.parse(pm.request.body.raw);\r",
+                  "\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "    pm.expect(response).to.not.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Created post contains an ID\", function () {\r",
+                  "    pm.expect(response).to.have.property(\"id\");\r",
+                  "    pm.expect(response.id).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Created post title matches request\", function () {\r",
+                  "    pm.expect(response.title).to.eql(requestBody.title);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Created post body matches request\", function () {\r",
+                  "    pm.expect(response.body).to.eql(requestBody.body);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Created post userId matches request\", function () {\r",
+                  "    pm.expect(response.userId).to.eql(requestBody.userId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains required post fields\", function () {\r",
+                  "    pm.expect(response).to.include.all.keys(\r",
+                  "        \"title\",\r",
+                  "        \"body\",\r",
+                  "        \"userId\",\r",
+                  "        \"id\"\r",
+                  "    );\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"QA API Testing\",\r\n    \"body\": \"Testing post creation using Postman\",\r\n    \"userId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Entire Resource",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const requestBody = JSON.parse(pm.request.body.raw);\r",
+                  "const expectedPostId = Number(pm.environment.get(\"postId\"));\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "    pm.expect(response).to.not.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Returned post ID matches requested post ID\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedPostId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated title matches request\", function () {\r",
+                  "    pm.expect(response.title).to.eql(requestBody.title);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated body matches request\", function () {\r",
+                  "    pm.expect(response.body).to.eql(requestBody.body);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated userId matches request\", function () {\r",
+                  "    pm.expect(response.userId).to.eql(requestBody.userId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains all required fields\", function () {\r",
+                  "    pm.expect(response).to.have.all.keys(\r",
+                  "        \"id\",\r",
+                  "        \"title\",\r",
+                  "        \"body\",\r",
+                  "        \"userId\"\r",
+                  "    );\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response field data types are correct\", function () {\r",
+                  "    pm.expect(response.id).to.be.a(\"number\");\r",
+                  "    pm.expect(response.title).to.be.a(\"string\");\r",
+                  "    pm.expect(response.body).to.be.a(\"string\");\r",
+                  "    pm.expect(response.userId).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 1,\r\n    \"title\": \"Updated QA API Testing Post\",\r\n    \"body\": \"Post fully updated using PUT request\",\r\n    \"userId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Partially Update Resource",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const requestBody = JSON.parse(pm.request.body.raw);\r",
+                  "const expectedPostId = Number(pm.environment.get(\"postId\"));\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "    pm.expect(response).to.not.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Returned post ID matches requested post ID\", function () {\r",
+                  "    pm.expect(response.id).to.eql(expectedPostId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Updated title matches request\", function () {\r",
+                  "    pm.expect(response.title).to.eql(requestBody.title);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post body is still present\", function () {\r",
+                  "    pm.expect(response).to.have.property(\"body\");\r",
+                  "    pm.expect(response.body).to.be.a(\"string\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"UserId is still present\", function () {\r",
+                  "    pm.expect(response).to.have.property(\"userId\");\r",
+                  "    pm.expect(response.userId).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response contains all post fields\", function () {\r",
+                  "    pm.expect(response).to.have.all.keys(\r",
+                  "        \"userId\",\r",
+                  "        \"id\",\r",
+                  "        \"title\",\r",
+                  "        \"body\"\r",
+                  "    );\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Partially Updated QA Post\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete a Resource",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "    pm.expect(response).to.not.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter Resources by User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedUserId = Number(pm.environment.get(\"userId\"));\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an array\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Filtered posts are returned\", function () {\r",
+                  "    pm.expect(response.length).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"All returned posts belong to requested user\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post.userId).to.eql(expectedUserId);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Each post contains required fields\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post).to.have.all.keys(\r",
+                  "            \"userId\",\r",
+                  "            \"id\",\r",
+                  "            \"title\",\r",
+                  "            \"body\"\r",
+                  "        );\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Post field data types are correct\", function () {\r",
+                  "    response.forEach(function (post) {\r",
+                  "        pm.expect(post.userId).to.be.a(\"number\");\r",
+                  "        pm.expect(post.id).to.be.a(\"number\");\r",
+                  "        pm.expect(post.title).to.be.a(\"string\");\r",
+                  "        pm.expect(post.body).to.be.a(\"string\");\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"No duplicate post IDs are returned\", function () {\r",
+                  "    const postIds = response.map(post => post.id);\r",
+                  "    const uniquePostIds = new Set(postIds);\r",
+                  "\r",
+                  "    pm.expect(uniquePostIds.size).to.eql(postIds.length);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?userId={{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Nested Resources (Post comments)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "const expectedPostId = Number(pm.environment.get(\"postId\"));\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Content-Type is application/json\", function () {\r",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\"))\r",
+                  "        .to.include(\"application/json\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an array\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Comments are returned\", function () {\r",
+                  "    pm.expect(response.length).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"All comments belong to requested post\", function () {\r",
+                  "    response.forEach(function (comment) {\r",
+                  "        pm.expect(comment.postId).to.eql(expectedPostId);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Each comment contains required fields\", function () {\r",
+                  "    response.forEach(function (comment) {\r",
+                  "        pm.expect(comment).to.have.all.keys(\r",
+                  "            \"postId\",\r",
+                  "            \"id\",\r",
+                  "            \"name\",\r",
+                  "            \"email\",\r",
+                  "            \"body\"\r",
+                  "        );\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Comment field data types are correct\", function () {\r",
+                  "    response.forEach(function (comment) {\r",
+                  "        pm.expect(comment.postId).to.be.a(\"number\");\r",
+                  "        pm.expect(comment.id).to.be.a(\"number\");\r",
+                  "        pm.expect(comment.name).to.be.a(\"string\");\r",
+                  "        pm.expect(comment.email).to.be.a(\"string\");\r",
+                  "        pm.expect(comment.body).to.be.a(\"string\");\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Comment email values have valid format\", function () {\r",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\r",
+                  "\r",
+                  "    response.forEach(function (comment) {\r",
+                  "        pm.expect(comment.email).to.match(emailRegex);\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Comment bodies are not empty\", function () {\r",
+                  "    response.forEach(function (comment) {\r",
+                  "        pm.expect(comment.body.trim()).to.not.be.empty;\r",
+                  "    });\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"No duplicate comment IDs are returned\", function () {\r",
+                  "    const commentIds = response.map(comment => comment.id);\r",
+                  "    const uniqueCommentIds = new Set(commentIds);\r",
+                  "\r",
+                  "    pm.expect(uniqueCommentIds.size).to.eql(commentIds.length);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "{{postId}}",
+                "comments"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative Tests",
+      "item": [
+        {
+          "name": "Post with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Invalid post ID does not return successful status\", function () {\r",
+                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response does not expose a valid post\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response).to.not.have.property(\"id\");\r",
+                  "    pm.expect(response).to.not.have.property(\"title\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Post with Non-numeric ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Invalid post ID does not return successful status\", function () {\r",
+                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response does not expose a valid post\", function () {\r",
+                  "    const response = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(response).to.not.have.property(\"id\");\r",
+                  "    pm.expect(response).to.not.have.property(\"title\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Post with Empty Body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response body is an object\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"object\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"API returns a generated ID\", function () {\r",
+                  "    pm.expect(response).to.have.property(\"id\");\r",
+                  "    pm.expect(response.id).to.be.a(\"number\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response does not contain title\", function () {\r",
+                  "    pm.expect(response).to.not.have.property(\"title\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response does not contain body\", function () {\r",
+                  "    pm.expect(response).to.not.have.property(\"body\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response does not contain userId\", function () {\r",
+                  "    pm.expect(response).to.not.have.property(\"userId\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Post with Malformed JSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Malformed JSON should return 400 Bad Request\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response should not expose stack trace\", function () {\r",
+                  "    pm.expect(pm.response.text()).to.not.include(\"node_modules\");\r",
+                  "    pm.expect(pm.response.text()).to.not.include(\"processTicksAndRejections\");\r",
+                  "    pm.expect(pm.response.text()).to.not.include(\"/app/\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response should not return Internal Server Error\", function () {\r",
+                  "    pm.expect(pm.response.code).to.not.eql(500);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response time is less than 2000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+                  "});\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"QA API Testing\",\r\n    \"body\": \"Testing malformed JSON\"\r\n    \"userId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
